@@ -1,0 +1,23 @@
+on:
+  push:
+  pull_request_target:
+  schedule:
+    - cron: '0 * * * *'
+jobs:
+  move-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-known-hosts: 'github.com'
+          ssh-key: ${{ secrets.SSH_KEY }}
+          
+      - uses: olivr/copybara-action@v1.2.3
+        with:
+          access_token: ${{ secrets.GH_TOKEN }}
+          sot_repo: https://github.com/jordanlin00/copybara
+          destination_repo: https://github.com/copybara-actions-demo-org/copybara-destination-fork.git
+          custom_config: copy.bara.sky
+          workflow: default
+          copybara_options: --force --init-history
