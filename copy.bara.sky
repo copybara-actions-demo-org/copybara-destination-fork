@@ -10,6 +10,6 @@ core.workflow(
     ),
     authoring = authoring.pass_thru("No-Reply <no-reply@github.com>"),
     migrate_noop_changes = True,
-    origin_files = glob(["**"], exclude = [".github.com/**/.*"]),
+    origin_files = glob(["**"], exclude = [".github/workflows/**"]),
     destination_files = glob(['**'], exclude = ["copy.bara.sky", ".github/**"])
 )
