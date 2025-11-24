@@ -2,7 +2,7 @@ on:
   push:
   pull_request_target:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '*/5 * * * *'
 jobs:
   move-code:
     runs-on: ubuntu-latest
