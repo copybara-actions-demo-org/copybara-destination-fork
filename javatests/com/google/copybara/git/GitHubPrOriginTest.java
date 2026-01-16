@@ -1455,9 +1455,11 @@ public class GitHubPrOriginTest {
     GitHubPrOrigin prOrigin =
         skylark.eval(
             "result",
-            "result = git.github_pr_origin(\n"
-                + "    url = 'https://github.com/google/copybara'\n"
-                + ")");
+            """
+            result = git.github_pr_origin(
+                url = 'https://github.com/google/copybara'
+            )\
+            """);
     assertThat(prOrigin.getApprovalsProvider())
         .isInstanceOf(GitHubPreSubmitApprovalsProvider.class);
   }
@@ -1469,18 +1471,39 @@ public class GitHubPrOriginTest {
     GitHubPrOrigin origin =
         skylark.eval(
             "result",
-            "result = git.github_pr_origin(\n"
-                + "    url = 'https://github.com/foo/bar',\n"
-                + "    credentials = credentials.username_password(\n"
-                + "      credentials.static_value('test@example.com'),\n"
-                + "      credentials.static_secret('password', 'top_secret'))\n"
-                + "    )");
+            """
+            result = git.github_pr_origin(
+                url = 'https://github.com/foo/bar',
+                credentials = credentials.username_password(
+                  credentials.static_value('test@example.com'),
+                  credentials.static_secret('password', 'top_secret'))
+                )\
+            """);
     assertThat(origin.describeCredentials()).isNotEmpty();
     GitRepository repository = origin.getRepository();
     UserPassword result = repository
         .credentialFill("https://github.com/foo/bar");
     assertThat(result.getUsername()).isEqualTo("test@example.com");
     assertThat(result.getPassword_BeCareful()).isEqualTo("top_secret");
+  }
+
+  @Test
+  public void testParseGithubPrOrigin() throws Exception {
+    String customHost = "ghes.example.com";
+    String orgAndRepoName = "my-org/my-repo";
+    String url = "https://" + customHost + "/" + orgAndRepoName;
+    GitHubPrOrigin origin =
+        skylark.eval(
+            "r",
+            String.format(
+                "r = git.github_pr_origin("
+                    + "    url = '%s',"
+                    + "    github_host_name = '%s'"
+                    + ")",
+                url, customHost));
+
+    assertThat(origin.toString()).contains("ghHost=" + customHost);
+    assertThat(origin.toString()).contains("url=" + url);
   }
 
   private void checkResolve(GitHubPrOrigin origin, String reference, int prNumber)

@@ -27,6 +27,8 @@ import com.google.auto.value.AutoValue;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
@@ -909,5 +911,12 @@ public class GitHubPrOrigin implements Origin<GitRevision> {
       return ImmutableList.of();
     }
     return credentials.describeCredentials();
+  }
+
+  @Override
+  public String toString() {
+    ToStringHelper helper =
+        MoreObjects.toStringHelper(this).add("ghHost", ghHost.getHost()).add("url", url);
+    return helper.toString();
   }
 }
